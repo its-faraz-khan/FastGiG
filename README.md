@@ -405,7 +405,7 @@ Post {
 
 **No Docker**: Every service must be independently executable with a single start command. Each service has its own README with setup and run instructions.
 
-**Database Justification**: Whatever database you choose (PostgreSQL, MongoDB, MySQL, SQLite), document why. If PostgreSQL, show how you use views or GROUP BY queries to aggregate without exposing individual worker PII. If MongoDB, explain your anonymisation approach on aggregate pipelines.
+**Database**: PostgreSQL is used for this project. It provides SQL views for anonymisation, row-level security, strong ACID guarantees, and jsonb support for flexible metadata storage.
 
 **Seeded Data**: The city-wide median comparison on the worker dashboard must be computed from real seeded records in the database (at least a few hundred entries across multiple zones, platforms, and categories), not hardcoded constants.
 
@@ -489,7 +489,7 @@ fastgig/
 
 - Python 3.9+ (for Python services)
 - Node.js 16+ (for Grievance Service and Frontend)
-- PostgreSQL or MongoDB (choose one; see database section)
+- PostgreSQL (see database section)
 - MailHog (for OTP testing in development)
 - Git
 
@@ -540,7 +540,7 @@ cd ..
 
 Choose one of the following:
 
-**Option A: PostgreSQL**
+**PostgreSQL Setup**
 
 ```bash
 # Create database
@@ -555,24 +555,10 @@ python seed.py --platform postgresql
 cd ..
 ```
 
-**Option B: MongoDB**
-
-```bash
-# Start MongoDB locally or connect to remote
-mongod
-
-# Run seeding script
-cd database
-python seed.py --platform mongodb
-cd ..
-```
-
 Create a `.env` file in each service with your database URL:
 
 ```
 DATABASE_URL=postgresql://user:password@localhost/fairgig_db
-# OR
-DATABASE_URL=mongodb://localhost:27017/fairgig
 ```
 
 #### Step 3: Start MailHog
@@ -741,8 +727,6 @@ The analytics service queries only this view and never touches the raw earnings 
 
 4. **Jsonb for Flexible Metadata**: Platform-specific metadata (e.g., Careem bonus structure) can be stored as jsonb with fast querying.
 
-If you choose MongoDB instead, explain how aggregation pipelines using `$facet`, `$bucket`, and `$group` compute statistics without projecting individual worker documents in the result set.
-
 ---
 
 ## Beyond the Requirements: Optional Enhancements
@@ -843,7 +827,7 @@ Simulate advocate dashboard query load with 500+ workers' data. Analytics endpoi
 
 ### For Production
 
-1. Use managed databases (AWS RDS PostgreSQL, MongoDB Atlas, Google Cloud SQL)
+1. Use managed databases (AWS RDS PostgreSQL, Google Cloud SQL, Azure Database for PostgreSQL)
 2. Deploy services to cloud (AWS Lambda, Google Cloud Run, Heroku, DigitalOcean, etc.)
 3. Enable HTTPS everywhere; redirect HTTP to HTTPS
 4. Use environment-specific config (.env for dev, secrets manager for prod)
