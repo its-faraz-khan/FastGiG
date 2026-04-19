@@ -52,7 +52,27 @@
       "Bash(curl -s -X POST http://localhost:8001/auth/login -H 'Content-Type: application/json' -d '{\"email\": \"alitest@example.com\", \"password\": \"wrongpass\"}')",
       "Bash(curl -s -X POST http://localhost:8001/auth/otp/verify -H 'Content-Type: application/json' -d '{\"email\": \"alitest@example.com\", \"otp\": \"000000\"}')",
       "Bash(venv/Scripts/python.exe -m pip install requests -q)",
-      "Bash(curl -s http://localhost:8001/openapi.json)"
+      "Bash(curl -s http://localhost:8001/openapi.json)",
+      "Bash(venv/Scripts/python.exe -c ' *)",
+      "Bash(awk '{print $1}')",
+      "Bash(xargs kill *)",
+      "Bash(venv/Scripts/python.exe mail_server.py)",
+      "Bash(echo \"mail PID=$!\")",
+      "Bash(netstat.exe -ano)",
+      "Bash(/c/Windows/System32/cmd.exe *)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(timeout 5 venv/Scripts/python.exe -u mail_server.py)",
+      "Bash(venv/Scripts/python.exe -u -c ' *)",
+      "Bash(venv/Scripts/python.exe -u mail_server.py)",
+      "Bash(curl -s http://localhost:8001/health)",
+      "Bash(venv/Scripts/python.exe -u main.py)",
+      "Bash(venv/Scripts/python.exe test_auth.py)",
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npm start *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash(taskkill /F /FI \"WINDOWTITLE eq npm*\" /IM node.exe)"
     ]
   }
 }

@@ -17,6 +17,9 @@ PLATFORM_TO_CATEGORY = {
     "Other": "other",
 }
 
+# Triple-quoted raw string avoids single-quote escaping issues
+_SPECIAL_CHAR_RE = re.compile(r"""[!@#$%^&*()\-_=+\[\]{};:'",.<>?/\\|`~]""")
+
 
 def _validate_password_strength(v: str) -> str:
     errors = []
@@ -28,8 +31,8 @@ def _validate_password_strength(v: str) -> str:
         errors.append("one lowercase letter")
     if not re.search(r"\d", v):
         errors.append("one digit")
-    if not re.search(r'[!@#$%^&*()\-_=+\[\]{};:\'",.<>?/\\|`~]', v):
-        errors.append("one special character")
+    if not _SPECIAL_CHAR_RE.search(v):
+        errors.append("one special character (!@#$%^&* etc.)")
     if errors:
         raise ValueError("Password must contain: " + ", ".join(errors))
     return v
@@ -94,6 +97,7 @@ class LoginResponse(BaseModel):
     refresh_token: str
     role: str
     user_id: str
+    expires_in: int  # access token lifetime in seconds
 
 
 # ---------------------------------------------------------------------------
@@ -119,6 +123,7 @@ class RefreshRequest(BaseModel):
 
 class RefreshResponse(BaseModel):
     token: str
+    expires_in: int
 
 
 class VerifyResponse(BaseModel):
@@ -126,6 +131,29 @@ class VerifyResponse(BaseModel):
     user_id: str
     email: str
     role: str
+
+
+# ---------------------------------------------------------------------------
+# Current user (GET /auth/me)
+# ---------------------------------------------------------------------------
+
+class WorkerProfile(BaseModel):
+    full_name: str
+    city_zone: str
+    primary_platform: str
+    category: str
+    verified_entries_count: int
+
+    model_config = {"from_attributes": True}
+
+
+class MeResponse(BaseModel):
+    user_id: str
+    email: str
+    role: str
+    email_verified: bool
+    created_at: str
+    worker_profile: Optional[WorkerProfile] = None
 
 
 # ---------------------------------------------------------------------------
@@ -152,3 +180,9 @@ class ResetPasswordRequest(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str
+
+
+class HealthResponse(BaseModel):
+    status: str
+    service: str
+    version: str

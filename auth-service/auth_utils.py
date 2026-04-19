@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import bcrypt
 import jwt
@@ -11,6 +11,11 @@ JWT_SECRET = os.getenv("JWT_SECRET", "change-me-in-production")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRY_MINUTES = int(os.getenv("JWT_EXPIRY_MINUTES", "15"))
 REFRESH_TOKEN_EXPIRY_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRY_DAYS", "7"))
+
+
+def utcnow() -> datetime:
+    """Return current UTC time as a naive datetime (compatible with TIMESTAMP columns)."""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 def get_password_hash(password: str) -> str:
@@ -26,25 +31,27 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def create_access_token(user) -> str:
+    now = utcnow()
     payload = {
         "sub": str(user.id),
         "email": user.email,
         "role": user.role,
         "type": "access",
-        "iat": datetime.utcnow(),
-        "exp": datetime.utcnow() + timedelta(minutes=JWT_EXPIRY_MINUTES),
+        "iat": now,
+        "exp": now + timedelta(minutes=JWT_EXPIRY_MINUTES),
     }
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
 def create_refresh_token(user) -> str:
+    now = utcnow()
     payload = {
         "sub": str(user.id),
         "email": user.email,
         "role": user.role,
         "type": "refresh",
-        "iat": datetime.utcnow(),
-        "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRY_DAYS),
+        "iat": now,
+        "exp": now + timedelta(days=REFRESH_TOKEN_EXPIRY_DAYS),
     }
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 

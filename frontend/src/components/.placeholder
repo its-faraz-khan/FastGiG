@@ -1,0 +1,14 @@
+// Placeholder for components directory
+// Components to be created:
+// - Layout/Header.tsx
+// - Layout/Sidebar.tsx
+// - Layout/Footer.tsx
+// - Forms/LoginForm.tsx
+// - Forms/RegisterForm.tsx
+// - Forms/EarningsForm.tsx
+// - Charts/EarningsTrendChart.tsx
+// - Charts/CommissionChart.tsx
+// - Common/Card.tsx
+// - Common/Modal.tsx
+// - Common/Alert.tsx
+// - Common/Spinner.tsx

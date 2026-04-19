@@ -1,10 +1,14 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from database import Base
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 class User(Base):
@@ -15,8 +19,8 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     role = Column(String(50), nullable=False)
     email_verified = Column(Boolean, default=False)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=_utcnow)
+    updated_at = Column(DateTime, nullable=False, default=_utcnow, onupdate=_utcnow)
     last_login = Column(DateTime)
 
     worker = relationship("Worker", back_populates="user", uselist=False)
@@ -35,8 +39,8 @@ class Worker(Base):
     verified_entries_count = Column(Integer, default=0)
     profile_image_url = Column(String(500))
     bio = Column(Text)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=_utcnow)
+    updated_at = Column(DateTime, nullable=False, default=_utcnow, onupdate=_utcnow)
 
     user = relationship("User", back_populates="worker")
 
@@ -50,7 +54,7 @@ class OtpToken(Base):
     purpose = Column(String(50), nullable=False)
     expiry = Column(DateTime, nullable=False)
     is_used = Column(Boolean, default=False)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=_utcnow)
 
 
 class PasswordResetToken(Base):
@@ -61,6 +65,6 @@ class PasswordResetToken(Base):
     token = Column(String(255), nullable=False, unique=True)
     expiry = Column(DateTime, nullable=False)
     is_used = Column(Boolean, default=False)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=_utcnow)
 
     user = relationship("User", back_populates="password_reset_tokens")
